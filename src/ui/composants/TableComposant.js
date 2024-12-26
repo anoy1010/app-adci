@@ -36,7 +36,6 @@ const deleteUser = async (id) => {
 
 function TableComposant() {
   const userArtisans = useArtisans();
-  // const [userArtisans, setUserArtisans] = useState([]);
 
   const columns = [
     { field: "order", header: "Order" },
@@ -61,25 +60,6 @@ function TableComposant() {
     return remainingDays > 0 ? remainingDays : 0;
   };
 
-  // Mettre à jour les jours restants une seule fois après le montage
-  // useEffect(() => {
-  //   const unsubscribe = onSnapshot(
-  //     collection(db, "userArtisans"),
-  //     (querySnapshot) => {
-  //       const data = querySnapshot.docs.map((doc) => {
-  //         const docData = doc.data();
-  //         return {
-  //           id: doc.id,
-  //           ...docData,
-  //           delay: calculateRemainingDays(docData.endDate),
-  //         };
-  //       });
-  //       setUserArtisans(data);
-  //     }
-  //   );
-  //   return () => unsubscribe();
-  // }, []); // Pas de dépendances, l'effet s'exécute une fois après le montage.
-
   const handleDelete = async (id) => {
     try {
       await deleteUser(id); // Supprimer de Firestore
@@ -97,8 +77,8 @@ function TableComposant() {
   };
 
   return (
-    <div className="table-container">
-      <ButtonAdd onAdd={handleAddUser} />{" "}
+    <div className="table-container overflow-x-auto">
+      <ButtonAdd onAdd={handleAddUser} />
       <DataTable
         value={userArtisans}
         scrollable
@@ -116,6 +96,8 @@ function TableComposant() {
                 ? new Date(rowData[col.field]).toLocaleDateString()
                 : rowData[col.field]
             }
+            className="p-2 md:p-3 text-xs sm:text-sm lg:text-base" // Réactivité sur les tailles de texte
+            style={{ minWidth: "150px" }} // Assurer que les colonnes aient une largeur minimale
           />
         ))}
         <Column
@@ -124,6 +106,8 @@ function TableComposant() {
           body={(rowData) => (
             <ActionButton rowData={rowData} handleDelete={handleDelete} />
           )}
+          className="text-center"
+          style={{ minWidth: "100px" }} // Largeur minimale pour l'action
         />
       </DataTable>
     </div>

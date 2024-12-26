@@ -174,67 +174,76 @@ function ButtonAdd() {
       <Dialog
         header="Ajouter un utilisateur"
         visible={showDialog}
-        style={{ width: "30vw" }}
+        style={{ width: "30vw" }} // Largeur par défaut pour les grands écrans
         onHide={() => setShowDialog(false)} // Fermer le dialog
         className="dialog-form"
+        breakpoints={{ "960px": "75vw", "640px": "90vw" }}
       >
         <div className="p-fluid content-form">
-          <div className="field">
+          <div className="field mb-4 md:mb-6">
             <InputText
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
               placeholder="Nom"
+              className="w-full"
             />
           </div>
-          <div className="field">
+          <div className="field mb-4 md:mb-6">
             <InputText
               id="lastName"
               name="lastName"
               value={formData.lastName}
               onChange={handleInputChange}
               placeholder="Prenom"
+              className="w-full"
             />
           </div>
-          <div className="field">
+          <div className="field mb-4 md:mb-6">
             <InputText
               id="storeName"
               name="storeName"
               value={formData.storeName}
               onChange={handleInputChange}
               placeholder="Nom de la boutique"
+              className="w-full"
             />
           </div>
-          <div className="field">
+          <div className="field mb-4 md:mb-6">
             <InputText
               id="contact"
               name="contact"
               value={formData.contact}
               onChange={handleInputChange}
               placeholder="Contact"
+              className="w-full"
             />
           </div>
-          <div className="field">
+          <div className="field mb-4 md:mb-6">
             <InputText
               id="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
               placeholder="Email"
+              className="w-full"
             />
           </div>
-          <div className="field">
-            <label htmlFor="status">Abonnement</label>
+          <div className="field mb-4 md:mb-6">
+            <label className="block mb-2" htmlFor="status">
+              Abonnement
+            </label>
             <Dropdown
               id="status"
               value={formData.status}
               options={abonnementOptions}
               onChange={handleDropdownChange}
               placeholder="Choisir un abonnement"
+              className="w-full"
             />
           </div>
-          <div className="field">
+          <div className="field mb-4 md:mb-6">
             <label htmlFor="months">Durée abonnement (mois)</label>
             <Dropdown
               id="months"
@@ -242,6 +251,7 @@ function ButtonAdd() {
               options={monthsOptions}
               onChange={handleMonthsChange}
               placeholder="Sélectionnez la durée"
+              className="w-full"
             />
           </div>
           {/* <div className="field">
@@ -253,7 +263,7 @@ function ButtonAdd() {
               placeholder="Jours restants"
             />
           </div> */}
-          <div className="field">
+          <div className="field  mb-4 md:mb-6">
             <label htmlFor="months">Date de souscription</label>
             <Calendar
               id="subscriptionDate"
@@ -267,9 +277,10 @@ function ButtonAdd() {
               }
               showIcon
               placeholder="Choisir une date"
+              className="w-full"
             />
           </div>
-          <div className="field">
+          <div className="field  mb-4 md:mb-6">
             <label htmlFor="months">Date de fin de souscription</label>
             <InputText
               id="endDate"
@@ -280,10 +291,11 @@ function ButtonAdd() {
               }
               placeholder="Date de fin de souscription"
               readOnly
+              className="w-full"
             />
           </div>
         </div>
-        <div className="flex items-center justify-center">
+        <div className="flex justify-center mt-6">
           <Button
             className="button-form"
             label="Ajouter"
