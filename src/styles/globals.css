@@ -1,0 +1,88 @@
+@import url("https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+html,
+body {
+  height: 100%; /* Fait en sorte que le body et le HTML prennent toute la hauteur de la page */
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: "Mona Sans", sans-serif;
+}
+
+/* Style pour le conteneur principal */
+.table-container {
+  padding: 1rem; /* Espace autour du tableau */
+  margin: auto; /* Centrer le tableau horizontalement */
+  max-width: 90%; /* Limite la largeur */
+  overflow-x: auto; /* Ajoute un défilement horizontal si nécessaire */
+  background-color: #f9f9f9; /* Fond du contenant */
+  border-radius: 8px; /* Coins arrondis */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre légère */
+}
+
+/* Style pour le tableau */
+.custom-table {
+  text-align: center; /* Centrer le texte dans toutes les cellules */
+  border-spacing: 0;
+  /* Supprime les espaces entre les cellules */
+}
+
+.content-table {
+  text-align: center;
+}
+
+/* Style pour les en-têtes */
+.custom-table th {
+  background-color: orangered; /* Couleur de fond des en-têtes */
+  color: white; /* Couleur du texte des en-têtes */
+  font-weight: bold; /* Texte en gras */
+  text-align: center; /* Centre le texte */
+  padding: 1rem;
+
+  /* Espace dans les cellules d'en-tête */
+}
+
+/* Style pour les cellules */
+.custom-table td {
+  padding: 0.75rem; /* Espace dans les cellules */
+  vertical-align: middle; /* Aligne le contenu verticalement au centre */
+  border-bottom: 1px solid #ddd; /* Ligne de séparation */
+}
+
+/* Style pour la colonne Actions */
+.action-buttons-container {
+  display: flex;
+  justify-content: center; /* Centre les boutons horizontalement */
+  align-items: center; /* Centre les boutons verticalement */
+  gap: 0.5rem; /* Ajoute de l'espace entre les boutons */
+}
+.content-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.dialog-form {
+  position: relative;
+}
+
+.p-calendar {
+  width: 100%;
+}
