@@ -7,6 +7,7 @@ import {
   query,
   orderBy,
   writeBatch,
+  update,
 } from "firebase/firestore";
 import { db } from "@/pages/api/firebase";
 
@@ -64,4 +65,14 @@ export const reorderDocuments = async () => {
     batch.update(doc.ref, { order: index + 1 });
   });
   await batch.commit();
+};
+
+export const updateUser = async (id, updatedData) => {
+  try {
+    const userDoc = doc(db, "userArtisans", id);
+    await updateDoc(userDoc, updatedData);
+    console.log("Utilisateur mis à jour avec succès !");
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de l'utilisateur:", error);
+  }
 };

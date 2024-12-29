@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import ActionButton from "./actionButton";
@@ -8,10 +8,22 @@ import {
   deleteDoc,
   doc,
   addDoc,
-  onSnapshot,
+  updateDoc, // Ajout pour mettre à jour Firestore
 } from "firebase/firestore";
 import ButtonAdd from "./buttonAdd";
 import useArtisans from "../utils/useArtisan";
+import EditModalUser from "./EditModalUser"; // Import du modal pour modifier l'utilisateur
+
+// Fonction pour mettre à jour un utilisateur dans Firestore
+const updateUser = async (id, updatedData) => {
+  try {
+    const userDoc = doc(db, "userArtisans", id);
+    await updateDoc(userDoc, updatedData);
+    console.log("Utilisateur mis à jour avec succès !");
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de l'utilisateur:", error);
+  }
+};
 
 // Fonction pour ajouter un utilisateur dans Firestore
 const addUser = async (newUser) => {
@@ -37,6 +49,10 @@ const deleteUser = async (id) => {
 function TableComposant() {
   const userArtisans = useArtisans();
 
+  // États pour la gestion du modal d'édition
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+
   const columns = [
     { field: "order", header: "Order" },
     { field: "pict", header: "" },
@@ -51,18 +67,30 @@ function TableComposant() {
     { field: "endDate", header: "Date de fin de souscription" },
   ];
 
-  // Calculer les jours restants
-  const calculateRemainingDays = (endDate) => {
-    const today = new Date();
-    const end = new Date(endDate);
-    const timeDifference = end - today;
-    const remainingDays = Math.ceil(timeDifference / (1000 * 3600 * 24));
-    return remainingDays > 0 ? remainingDays : 0;
+  // Gestion de l'édition d'un utilisateur
+  const handleEdit = (user) => {
+    setSelectedUser(user); // Définit l'utilisateur à modifier
+    setIsEditModalVisible(true); // Ouvre le modal
+  };
+
+  const handleCloseEditModal = () => {
+    setSelectedUser(null); // Réinitialise l'utilisateur sélectionné
+    setIsEditModalVisible(false); // Ferme le modal
+  };
+
+  const handleSaveEdit = async (updatedUser) => {
+    try {
+      await updateUser(updatedUser.id, updatedUser); // Met à jour dans Firestore
+      console.log("Mise à jour réussie !");
+      handleCloseEditModal(); // Ferme le modal après la mise à jour
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour :", error);
+    }
   };
 
   const handleDelete = async (id) => {
     try {
-      await deleteUser(id); // Supprimer de Firestore
+      await deleteUser(id); // Supprime de Firestore
     } catch (error) {
       console.error("Erreur lors de la suppression:", error);
     }
@@ -70,7 +98,7 @@ function TableComposant() {
 
   const handleAddUser = async (newUser) => {
     try {
-      await addUser(newUser); // Ajouter à Firestore
+      await addUser(newUser); // Ajoute à Firestore
     } catch (error) {
       console.error("Erreur lors de l'ajout:", error);
     }
@@ -96,20 +124,32 @@ function TableComposant() {
                 ? new Date(rowData[col.field]).toLocaleDateString()
                 : rowData[col.field]
             }
-            className="p-2 md:p-3 text-xs sm:text-sm lg:text-base" // Réactivité sur les tailles de texte
-            style={{ minWidth: "150px" }} // Assurer que les colonnes aient une largeur minimale
+            className="p-2 md:p-3 text-xs sm:text-sm lg:text-base"
+            style={{ minWidth: "100px" }}
           />
         ))}
         <Column
           field="action"
           header="Action"
           body={(rowData) => (
-            <ActionButton rowData={rowData} handleDelete={handleDelete} />
+            <ActionButton
+              rowData={rowData}
+              handleDelete={handleDelete}
+              handleEdit={handleEdit}
+            />
           )}
           className="text-center"
-          style={{ minWidth: "100px" }} // Largeur minimale pour l'action
+          style={{ minWidth: "150px" }}
         />
       </DataTable>
+
+      {/* Modal d'édition */}
+      <EditModalUser
+        userData={selectedUser} // Passez selectedUser à la prop userData
+        isVisible={isEditModalVisible} // Passez isEditModalVisible pour la visibilité
+        onClose={handleCloseEditModal}
+        onSave={handleSaveEdit} // Passez handleSaveEdit à la prop onSave
+      />
     </div>
   );
 }
