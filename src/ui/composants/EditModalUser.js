@@ -5,7 +5,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Toast } from "primereact/toast";
-import { calculateRemainingDays } from "../utils/CalculateRemainDays"; // Assurez-vous que cette fonction existe dans votre projet
+import { calculateRemainingDays } from "../utils/CalculateRemainDays";
 
 function EditModalUser({ userData, isVisible, onClose, onSave }) {
   const toast = useRef(null);
@@ -32,9 +32,10 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
         endDate: userData.endDate ? new Date(userData.endDate) : null,
       });
     }
-  }, [userData]); // Met à jour formData chaque fois que userData change
+  }, [userData]);
 
   const monthsOptions = [
+    { label: "2 Semaines", value: 0 },
     { label: "1 Mois", value: 1 },
     { label: "3 Mois", value: 3 },
     { label: "6 Mois", value: 6 },
@@ -58,11 +59,24 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value }); // Met à jour la donnée dans formData
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleDropdownChange = (e) => {
-    setFormData({ ...formData, status: e.value }); // Met à jour l'abonnement
+    const selectedStatus = e.value;
+    let newEndDate = formData.endDate;
+
+    if (selectedStatus === "standard" && formData.subscriptionDate) {
+      const subscriptionDate = new Date(formData.subscriptionDate);
+      newEndDate = new Date(subscriptionDate);
+      newEndDate.setDate(newEndDate.getDate() + 14); // Ajouter 14 jours
+    }
+
+    setFormData({
+      ...formData,
+      status: selectedStatus,
+      endDate: newEndDate,
+    });
   };
 
   const handleMonthsChange = (e) => {
@@ -125,10 +139,13 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
       visible={isVisible}
       onHide={onClose}
       style={{ width: "30vw" }}
+      className="dialog-form"
+      breakpoints={{ "960px": "75vw", "640px": "90vw" }}
     >
       <Toast ref={toast} />
-      <div className="p-fluid">
-        <div className="field">
+      <div className="p-fluid content-form">
+        {/* Champs de formulaire */}
+        <div className="field mb-4 md:mb-6">
           <label className="text-xl font-bold " htmlFor="name">
             Nom
           </label>
@@ -141,7 +158,7 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
             className="w-full"
           />
         </div>
-        <div className="field">
+        <div className="field mb-4 md:mb-6">
           <label className="text-xl font-bold " htmlFor="lastName">
             Prénom
           </label>
@@ -154,7 +171,7 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
             className="w-full"
           />
         </div>
-        <div className="field">
+        <div className="field mb-4 md:mb-6">
           <label className="text-xl font-bold " htmlFor="storeName">
             Nom de la boutique
           </label>
@@ -167,7 +184,7 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
             className="w-full"
           />
         </div>
-        <div className="field">
+        <div className="field mb-4 md:mb-6">
           <label className="text-xl font-bold " htmlFor="contact">
             Contact
           </label>
@@ -180,7 +197,7 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
             className="w-full"
           />
         </div>
-        <div className="field">
+        <div className="field mb-4 md:mb-6">
           <label className="text-xl font-bold " htmlFor="email">
             Email
           </label>
@@ -193,22 +210,19 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
             className="w-full"
           />
         </div>
-        <div className="field">
-          <label className="text-xl font-bold " htmlFor="status">
-            Abonnement
-          </label>
+        <div className="field mb-4 md:mb-6">
+          <label htmlFor="status">Abonnement</label>
           <Dropdown
             id="status"
-            value={formData.status} // Valeur du champ à partir de formData
+            value={formData.status}
             options={abonnementOptions}
             onChange={handleDropdownChange}
             placeholder="Choisir un abonnement"
-            className="w-full"
           />
         </div>
-        <div className="field">
+        <div className="field mb-4 md:mb-6">
           <label className="text-xl font-bold " htmlFor="months">
-            Durée abonnement (mois)
+            Durée abonnement
           </label>
           <Dropdown
             id="months"
@@ -219,42 +233,28 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
             className="w-full"
           />
         </div>
-        <div className="field">
-          <label className="text-xl font-bold " htmlFor="subscriptionDate">
-            Date de souscription
-          </label>
+        <div className="field mb-4 md:mb-6">
+          <label htmlFor="subscriptionDate">Date de souscription</label>
           <Calendar
             id="subscriptionDate"
-            value={formData.subscriptionDate} // Valeur du champ à partir de formData
+            value={formData.subscriptionDate}
             onChange={handleDateChange}
             showIcon
-            placeholder="Choisir une date"
-            className="w-full"
           />
         </div>
-        <div className="field">
-          <label className="text-xl font-bold " htmlFor="endDate">
-            Date de fin de souscription
-          </label>
+        <div className="field mb-4 md:mb-6">
+          <label htmlFor="endDate">Date de fin</label>
           <InputText
             id="endDate"
             value={
               formData.endDate
                 ? formData.endDate.toLocaleDateString("fr-FR")
                 : ""
-            } // Afficher la date de fin
+            }
             readOnly
-            className="w-full"
           />
         </div>
-        <div className="flex justify-center mt-6">
-          <Button
-            label="Modifier"
-            icon="pi pi-check"
-            onClick={handleSubmit}
-            className="button-form"
-          />
-        </div>
+        <Button label="Modifier" onClick={handleSubmit} />
       </div>
     </Dialog>
   );

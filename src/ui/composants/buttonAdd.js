@@ -28,6 +28,7 @@ function ButtonAdd() {
   });
 
   const monthsOptions = [
+    { label: "2 Semaines", value: 0 },
     { label: "1 Mois", value: 1 },
     { label: "3 Mois", value: 3 },
     { label: "6 Mois", value: 6 },
@@ -44,6 +45,7 @@ function ButtonAdd() {
 
   const handleDateChange = (e) => {
     const subscriptionDate = new Date(e.value);
+
     if (isNaN(subscriptionDate)) {
       toast.current.show({
         severity: "error",
@@ -53,8 +55,22 @@ function ButtonAdd() {
       return;
     }
 
-    const endDate = calculateEndDate(subscriptionDate, formData.months);
-    setFormData({ ...formData, subscriptionDate, endDate });
+    let endDate;
+
+    if (formData.status === "standard") {
+      // Si abonnement Standard, 2 semaines
+      endDate = new Date(subscriptionDate);
+      endDate.setDate(subscriptionDate.getDate() + 14); // Ajouter 14 jours
+    } else {
+      // Autres abonnements, calcul en fonction de la durée (months)
+      endDate = calculateEndDate(subscriptionDate, formData.months);
+    }
+
+    setFormData({
+      ...formData,
+      subscriptionDate,
+      endDate,
+    });
   };
 
   const handleInputChange = (e) => {
@@ -121,7 +137,40 @@ function ButtonAdd() {
   ];
 
   const handleDropdownChange = (e) => {
-    setFormData({ ...formData, status: e.value });
+    const selectedStatus = e.value;
+    let updatedFormData = { ...formData, status: selectedStatus };
+
+    if (selectedStatus === "standard") {
+      const subscriptionDate = new Date(formData.subscriptionDate);
+      const endDate = new Date(subscriptionDate);
+      endDate.setDate(subscriptionDate.getDate() + 14); // Ajouter 14 jours
+
+      updatedFormData = {
+        ...updatedFormData,
+        months: 0, // Forcer "2 Semaines"
+        delay: 14,
+        endDate,
+      };
+    } else {
+      // Réinitialiser pour les autres abonnements
+      updatedFormData = {
+        ...updatedFormData,
+        months: 1, // Par défaut à 1 mois
+        delay: calculateRemainingDays(formData.createdAt, 1),
+        endDate: calculateEndDate(formData.subscriptionDate, 1),
+      };
+    }
+
+    setFormData(updatedFormData);
+  };
+
+  // Dynamique : options en fonction de l'abonnement
+  const getFilteredMonthsOptions = () => {
+    if (formData.status === "standard") {
+      return monthsOptions; // Toutes les options disponibles
+    }
+    // Supprimer "2 Semaines" pour les autres abonnements
+    return monthsOptions.filter((option) => option.value !== 0);
   };
 
   const items = [
@@ -248,10 +297,11 @@ function ButtonAdd() {
             <Dropdown
               id="months"
               value={formData.months}
-              options={monthsOptions}
               onChange={handleMonthsChange}
+              options={getFilteredMonthsOptions()} // Options filtrées dynamiquement
               placeholder="Sélectionnez la durée"
               className="w-full"
+              disabled={formData.status === "standard"}
             />
           </div>
           {/* <div className="field">
@@ -267,14 +317,8 @@ function ButtonAdd() {
             <label htmlFor="months">Date de souscription</label>
             <Calendar
               id="subscriptionDate"
-              value={new Date(formData.subscriptionDate)} // Convertissez en Date si nécessaire
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  subscriptionDate: e.value, // Met à jour avec une instance valide de Date
-                  endDate: calculateEndDate(e.value, formData.months), // Calcule la date de fin
-                })
-              }
+              value={new Date(formData.subscriptionDate)}
+              onChange={handleDateChange} // Appel à la fonction mise à jour
               showIcon
               placeholder="Choisir une date"
               className="w-full"
