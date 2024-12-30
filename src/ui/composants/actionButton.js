@@ -49,14 +49,14 @@ function ActionButton({ rowData, handleDelete, handleEdit }) {
       {/* Modal pour confirmation de suppression */}
       {isModalVisible && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="relative w-full max-w-md p-6 bg-white rounded-lg shadow-lg md:w-1/2 lg:w-1/3">
+          <div className="relative flex flex-col items-center w-full max-w-md p-6 bg-white rounded-lg shadow-lg md:w-1/2 lg:w-1/3">
             <button
               onClick={closeModal}
               className="absolute top-3 right-3 text-xl text-white bg-red-600 rounded-full p-1.5 hover:bg-red-700"
             >
               &times;
             </button>
-            <p className="text-center text-lg font-medium text-gray-700">
+            <p className="text-center w-[70vw] text-lg font-medium text-gray-700">
               Voulez-vous vraiment supprimer cet élément ?
             </p>
             <div className="flex items-center justify-center mt-6 space-x-4">
