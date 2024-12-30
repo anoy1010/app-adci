@@ -64,19 +64,39 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
 
   const handleDropdownChange = (e) => {
     const selectedStatus = e.value;
-    let newEndDate = formData.endDate;
+    let updatedFormData = { ...formData, status: selectedStatus };
 
-    if (selectedStatus === "standard" && formData.subscriptionDate) {
+    if (selectedStatus === "standard") {
       const subscriptionDate = new Date(formData.subscriptionDate);
-      newEndDate = new Date(subscriptionDate);
-      newEndDate.setDate(newEndDate.getDate() + 14); // Ajouter 14 jours
+      const endDate = new Date(subscriptionDate);
+      endDate.setDate(subscriptionDate.getDate() + 14); // Ajouter 14 jours
+
+      updatedFormData = {
+        ...updatedFormData,
+        months: 0, // Forcer "2 Semaines"
+        delay: 14,
+        endDate,
+      };
+    } else {
+      // Réinitialiser pour les autres abonnements
+      updatedFormData = {
+        ...updatedFormData,
+        months: 1, // Par défaut à 1 mois
+        delay: calculateRemainingDays(formData.createdAt, 1),
+        endDate: calculateEndDate(formData.subscriptionDate, 1),
+      };
     }
 
-    setFormData({
-      ...formData,
-      status: selectedStatus,
-      endDate: newEndDate,
-    });
+    setFormData(updatedFormData);
+  };
+
+  // Dynamique : options en fonction de l'abonnement
+  const getFilteredMonthsOptions = () => {
+    if (formData.status === "standard") {
+      return monthsOptions; // Toutes les options disponibles
+    }
+    // Supprimer "2 Semaines" pour les autres abonnements
+    return monthsOptions.filter((option) => option.value !== 0);
   };
 
   const handleMonthsChange = (e) => {
@@ -91,6 +111,7 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
 
   const handleDateChange = (e) => {
     const subscriptionDate = new Date(e.value);
+
     if (isNaN(subscriptionDate)) {
       toast.current.show({
         severity: "error",
@@ -99,10 +120,22 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
       });
       return;
     }
+
+    let endDate;
+
+    if (formData.status === "standard") {
+      // Si abonnement Standard, 2 semaines
+      endDate = new Date(subscriptionDate);
+      endDate.setDate(subscriptionDate.getDate() + 14); // Ajouter 14 jours
+    } else {
+      // Autres abonnements, calcul en fonction de la durée (months)
+      endDate = calculateEndDate(subscriptionDate, formData.months);
+    }
+
     setFormData({
       ...formData,
       subscriptionDate,
-      endDate: calculateEndDate(subscriptionDate, formData.months),
+      endDate,
     });
   };
 
@@ -226,20 +259,23 @@ function EditModalUser({ userData, isVisible, onClose, onSave }) {
           </label>
           <Dropdown
             id="months"
-            value={formData.months} // Valeur du champ à partir de formData
-            options={monthsOptions}
+            value={formData.months}
+            options={getFilteredMonthsOptions()} // Options filtrées dynamiquement
             onChange={handleMonthsChange}
             placeholder="Sélectionnez la durée"
             className="w-full"
+            disabled={formData.status === "standard"} // Verrouiller pour "Standard"
           />
         </div>
         <div className="field mb-4 md:mb-6">
           <label htmlFor="subscriptionDate">Date de souscription</label>
           <Calendar
             id="subscriptionDate"
-            value={formData.subscriptionDate}
-            onChange={handleDateChange}
+            value={new Date(formData.subscriptionDate)}
+            onChange={handleDateChange} // Appel à la fonction mise à jour
             showIcon
+            placeholder="Choisir une date"
+            className="w-full"
           />
         </div>
         <div className="field mb-4 md:mb-6">
