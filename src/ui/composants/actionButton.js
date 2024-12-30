@@ -48,56 +48,27 @@ function ActionButton({ rowData, handleDelete, handleEdit }) {
 
       {/* Modal pour confirmation de suppression */}
       {isModalVisible && (
-        <div
-          className="modal flex justify-center items-center z-[1000] fixed top-0 left-0 w-full h-full bg-transparent "
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div className="modal-content relative w-[30vw] bg-white p-9 rounded-lg text-center shadow-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="relative w-full max-w-md p-6 bg-white rounded-lg shadow-lg md:w-1/2 lg:w-1/3">
             <button
               onClick={closeModal}
-              className="absolute top-1 right-0 pointer text-[19px] ring-1 bg-red-600 px-2 text-white ring-black  mx-5"
+              className="absolute top-3 right-3 text-xl text-white bg-red-600 rounded-full p-1.5 hover:bg-red-700"
             >
               &times;
             </button>
-            <p>Voulez-vous vraiment supprimer cet élément ?</p>
-            <div
-              className="flex items-center justify-center gap-x-4"
-              style={{ marginTop: "20px" }}
-            >
+            <p className="text-center text-lg font-medium text-gray-700">
+              Voulez-vous vraiment supprimer cet élément ?
+            </p>
+            <div className="flex items-center justify-center mt-6 space-x-4">
               <button
                 onClick={onConfirmDelete}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "red",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+                className="px-6 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
               >
                 Supprimer
               </button>
               <button
                 onClick={closeModal}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "black",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+                className="px-6 py-2 text-white bg-gray-800 rounded-md hover:bg-gray-900"
               >
                 Annuler
               </button>
