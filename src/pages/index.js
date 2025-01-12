@@ -1,16 +1,14 @@
-import { Button } from "primereact/button";
-import { Geist, Geist_Mono } from "next/font/google";
 import React, { useState, useEffect } from "react";
 import { fetchData } from "@/ui/utils/fireStoreServices"; // Correctement en minuscule
 import { calculateRemainingDays } from "@/ui/utils/CalculateRemainDays";
-import { SpeedDial } from "primereact/speeddial";
-import { useRouter } from "next/router";
-import { Toast } from "primereact/toast";
+
 import TableComposant from "@/ui/composants/TableComposant";
-import ActionButton from "@/ui/composants/actionButton";
+
 import ButtonAdd from "@/ui/composants/buttonAdd";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "./api/firebase";
+import TabMenuContent from "@/ui/composants/tabMenu";
+import AdminPage from "./admin/Admin";
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -43,10 +41,14 @@ export default function Home() {
 
   return (
     <div className="body">
+      {/* <div>
+        <TabMenuContent />
+      </div>
       <div className="flex items-center justify-center">
         <TableComposant products={data} />
       </div>
-      <ButtonAdd addRow={addRow} />
+      <ButtonAdd addRow={addRow} /> */}
+      <AdminPage />
     </div>
   );
 }

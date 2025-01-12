@@ -1,0 +1,24 @@
+// UserRow.js
+import React from "react";
+import ActionButton from "./actionButton";
+
+const UserRowClient = ({ user }) => {
+  return (
+    <tr>
+      <td>{user.order}</td>
+      <td>{user.pict}</td>
+      <td>{user.name}</td>
+      <td>{user.lastName}</td>
+      <td>{user.contact}</td>
+      <td>{user.email}</td>
+      <td>
+        <ActionButton
+          onEdit={() => handleEdit(user)}
+          onDelete={() => handleDelete(user.id)}
+        />
+      </td>
+    </tr>
+  );
+};
+
+export default UserRowClient;
